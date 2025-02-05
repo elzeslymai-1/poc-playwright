@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "npx playwright test",
-    "test:ui": "npx playwright test --ui"
+    "test:ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen",
+    "test:headless": "npx playwright test --headed",
+    "report": "npx playwright show-report"
   },
   "keywords": [],
   "author": "",
