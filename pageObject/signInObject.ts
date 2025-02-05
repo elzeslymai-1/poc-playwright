@@ -9,6 +9,9 @@ export class SignInPage {
     private continueButton: Locator
     private pageHeader: Locator
     private errorMessage: Locator
+    private textloginTitle: Locator
+    private emailPlaceholder: Locator
+
 
     constructor(page: Page) {
         this.page = page;
@@ -17,6 +20,9 @@ export class SignInPage {
         this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
         this.pageHeader = page.locator('.text-3xl.font-bold.text-onboarding-text-100');
         this.errorMessage = page.locator('div.w-full.text-sm.font-medium.text-custom-primary-100')
+        this.textloginTitle = page.locator('.text-3xl.font-bold.text-onboarding-text-100');
+        this.emailPlaceholder = page.getByPlaceholder('name@company.com');
+
     }
 
     async gotoSignInPage() {
@@ -54,7 +60,6 @@ export class SignInPage {
     async inputPassword(password: string) {
         await this.passwordInput.fill(password);
     }
-
     async clickContinue() {
         await this.continueButton.click();
     }
@@ -63,6 +68,20 @@ export class SignInPage {
         await this.inputEmail(email);
         await this.clickContinue();
         await this.inputPassword(password);
+        await this.clickContinue();
+        await this.page.waitForLoadState();
+    }
+    async checkloginTitle(expectedText: string) {
+        await expect(this.textloginTitle).toHaveText(expectedText);
+    }
+    async checkEmailPlaceholder (){
+        await expect(this.emailPlaceholder).toBeVisible();
+    }
+  
+    async signinPasswordfail(email: string, passwordfail: string) {
+        await this.inputEmail(email);
+        await this.clickContinue();
+        await this.inputPassword(passwordfail);
         await this.clickContinue();
         await this.page.waitForLoadState();
     }

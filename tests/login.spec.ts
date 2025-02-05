@@ -1,86 +1,65 @@
-import { test, expect } from '@playwright/test';
-import { execPath } from 'process';
+import { test, expect } from '../fixtures/pageFixtures'
+import { SignInPage } from '../pageObject/signinObject';
+import signInTestData from '../testData/signInTestData';
 
-test('vetify  loginpage ', async ({ page }) => {
+const BASE_URL = process.env.BASE_URL || ''
 
-    // gotopage
-    await page.goto('https://app.plane.so/');
-    await expect(page).toHaveURL('https://app.plane.so/');
-    //  vetify Text
-    const loginTitle = page.locator('.text-3xl.font-bold.text-onboarding-text-100');
-    await expect(loginTitle).toHaveText('Log in or sign up');
-    //check PlacePlaceholder input email
-    const emailfield = page.getByPlaceholder('name@company.com');
-    await expect(emailfield).toBeVisible();
-    // check button disable
-    const buttoncontinue = page.getByRole('button', { name: 'Continue', exact: true })
-    await expect(buttoncontinue).toBeDisabled();
+test.describe('Test Execution - log in page', () => {
 
-});
+    test.beforeEach(async ({ signInPage }) => {
+        await signInPage.gotoSignInPage()
+    })
 
-test('login  sucess   ', async ({ page }) => {
+    test('vetify  loginpage ', async ({ signInPage }) => {
+        // Expect a title "to contain" a substring.
+        await signInPage.checkTitle('Log in - Plane');
 
-    // gotopage
-    await page.goto('https://app.plane.so/');
-    //  input email
-    await page.getByRole('textbox', { name: 'Email' }).click();
-    await page.getByRole('textbox', { name: 'Email' }).fill('nonthawat.k@finstable.co.th');
-    // click button
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    // check url
-    await expect(page).toHaveURL('https://app.plane.so/');
-    // input Password
-    await page.getByRole('textbox', { name: 'Enter password' }).fill('Bae#17831');
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    // ckerk url
-    await expect(page).toHaveURL('https://app.plane.so/finstable/');
-});
+        // Expect a title "to contain" a substring.
+        await signInPage.checkloginTitle('Log in or sign up');
 
-test('login  email not in system   ', async ({ page }) => {
+        //check PlacePlaceholder input email
+        await signInPage.checkEmailPlaceholder();
 
-    // gotopage
-    await page.goto('https://app.plane.so/');
-    //  input email 
-    await page.getByRole('textbox', { name: 'Email' }).click();
-    await page.getByRole('textbox', { name: 'Email' }).fill('nonthawat@f.com');
-    // check button
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    await expect(page).toHaveURL('https://app.plane.so/');
-    //  check placeholder Unique code
-    const emailfield = page.getByPlaceholder('gets-sets-flys');
-    await expect(emailfield).toBeVisible();
-    // check text email
-    const Textsentemail = page.locator('.flex.items-center.gap-1.font-medium.text-green-700');
-    await expect(Textsentemail).toHaveText('Paste the code sent to your email');
-});
+        // Expect a Continue button to be disabled
+        await signInPage.checkContinueButtonToBeDisabled();
 
-test('Email is invalid format  ', async ({ page }) => {
-    // gotopage
-    await page.goto('https://app.plane.so/');
-    //  input email
-    await page.getByRole('textbox', { name: 'Email' }).click();
-    await page.getByRole('textbox', { name: 'Email' }).fill('nonthawat@.com');
-    // check button disable
-    const ButTonConTinue = page.getByRole('button', { name: 'Continue', exact: true })
-    await expect(ButTonConTinue).toBeDisabled();
+    });
 
-});
+    test('vetify input  Email is invalid format  ', async ({ signInPage }) => {
+        // Input email fail
+        await signInPage.inputEmail('neebee@.com');
 
-test('login fail password inv   ', async ({ page }) => {
+        // Expect a Continue button to be disabled
+        await signInPage.checkContinueButtonToBeDisabled();
 
-    // gotopage
-    await page.goto('https://app.plane.so/');
-    //  vetify button
-    await page.getByRole('textbox', { name: 'Email' }).click();
-    await page.getByRole('textbox', { name: 'Email' }).fill('nonthawat.k@finstable.co.th');
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    // recheck url
-    await expect(page).toHaveURL('https://app.plane.so/');
-    // input Password
-    await page.getByRole('textbox', { name: 'Enter password' }).fill('Bae#178318888');
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    //  vetify  Text error
-    const LoginFail = page.locator('div.w-full.text-sm.font-medium.text-custom-primary-100');
-    await expect(LoginFail).toHaveText('Authentication failed. Please try again.');
+
+    });
+
+    test('vetify input  Email is valid format  ', async ({ signInPage }) => {
+        // Input email fail
+        await signInPage.inputEmail('newbeet@hotmail.com');
+
+        // Expect a Continue button to be disabled
+        await signInPage.checkContinueButtonToBeEnabled();
+
+
+    });
+
+    test('login fail password invail  ', async ({ signInPage }) => {
+        // Input email , password fail
+        await signInPage.signinPasswordfail(signInTestData.account.email, signInTestData.account.passwordfail);
+
+        // Expect a title "to contain" a substring.
+        await signInPage.checkErrorMessage('Authentication failed. Please try again.');
+
+    });
+
+    test('login  sucess   ', async ({ page, signInPage }) => {
+        // Input email
+        await signInPage.signin(signInTestData.account.email, signInTestData.account.password);
+
+        // Expect a URL "to contain" a substring.
+        await expect(page).toHaveURL(`${BASE_URL}finstable/`);
+    });
 
 });
