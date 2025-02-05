@@ -9,6 +9,9 @@ export class SignUpPage {
     private otpInput: Locator
     private pageHeader: Locator
     private errorMessage: Locator
+    private clearButton: Locator
+    private bodyPage: Locator
+    private errorMessageInvalidEmailFormat: Locator
 
     constructor(page: Page) {
         this.page = page;
@@ -17,10 +20,17 @@ export class SignUpPage {
         this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
         this.pageHeader = page.locator('.text-3xl.font-bold.text-onboarding-text-100');
         this.errorMessage = page.locator('div.w-full.text-sm.font-medium.text-custom-primary-100')
+        this.clearButton = page.locator('svg.lucide-circle-x')
+        this.bodyPage = page.locator('body')
+        this.errorMessageInvalidEmailFormat = page.locator('p.flex.items-center.gap-1.text-xs.text-red-600');
     }
 
     async gotoSignUpPage() {
         await this.page.goto(`${BASE_URL}/sign-up/`);
+    }
+
+    async reloadPage() {
+        await this.page.reload();
     }
 
     async checkPageHeader(expectedText: string) {
@@ -43,8 +53,20 @@ export class SignUpPage {
         await expect(this.otpInput).toBeVisible();
     }
 
+    async checkClearButtonVisible() {
+        await expect(this.clearButton).toBeVisible();
+    }
+
+    async checkErrorMessageInvalidEmailFormat(expectedText: string) {
+        await expect(this.errorMessageInvalidEmailFormat).toHaveText(expectedText);
+    }
+
     async checkErrorMessage(expectedText: string) {
         await expect(this.errorMessage).toHaveText(expectedText);
+    }
+
+    async checkInputEmailEmpty() {
+        await expect(this.emailInput).toBeEmpty();
     }
 
     async inputEmail(email: string) {
@@ -57,5 +79,13 @@ export class SignUpPage {
 
     async clickContinue() {
         await this.continueButton.click();
+    }
+
+    async clickClearButton() {
+        await this.clearButton.click();
+    }
+
+    async clickBody() {
+        await this.bodyPage.click();
     }
 }
