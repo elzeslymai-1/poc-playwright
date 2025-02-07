@@ -110,8 +110,6 @@ export class SwagLabsPage {
         await this.clickLogoutButton();
         await expect(this.page).toHaveURL(`${BASE_URL}`);
             
-
-
     }
 
 }

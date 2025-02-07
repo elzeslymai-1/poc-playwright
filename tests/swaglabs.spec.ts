@@ -131,7 +131,6 @@ test.describe('Test Execution - Swag Labs Page', () => {
         await swagLabsPage.signoutSuccess(swagLabsTestData.account.username, swagLabsTestData.account.password);
     
     });
-
-
+    
 
 });
